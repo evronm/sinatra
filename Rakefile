@@ -26,7 +26,7 @@ def spec
       require 'rubygems/specification'
       data = File.read('sinatra.gemspec')
       spec = nil
-      Thread.new { spec = eval("$SAFE = 3\n#{data}") }.join
+      Thread.new { spec = eval("$SAFE = 2\n#{data}") }.join
       spec
     end
 end

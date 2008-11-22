@@ -888,7 +888,7 @@ module Sinatra
     # top-level the method is forwarded to the default application
     # (Sinatra::application).
     FORWARD_METHODS = %w[
-      get put post delete head template layout before error not_found
+      get put post delete head resource template layout before error not_found
       configures configure set set_options set_option enable disable use
       development? test? production?
     ]
@@ -1055,6 +1055,17 @@ module Sinatra
     # "_method" parameter set to "DELETE".
     def delete(path, options={}, &b)
       event(:delete, path, options, &b)
+    end
+    
+    #define event handlers for all resources for a given url
+    #path is a standard Sinatra path
+    #handlers takes the form {:get => proc {},:post => [{:user_agent => 'Mozilla'},proc {}] }
+    def resource(path, handlers)
+      handlers.each_pair do |action,handler|
+        options={}
+        options,handler=handler if handler.is_a?(Array)
+        event(action,path,options,&handler)
+      end
     end
 
     # Visits and invokes each handler registered for the +request_method+ in

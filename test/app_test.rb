@@ -296,4 +296,25 @@ context "Sinatra" do
     @response.body.should.be == '<foo></foo>'
   end
 
+  specify "resource method should create various event listeners" do
+    resource '/foobar', {
+      :get => proc { '<h1>successful get</h1>' },
+      :post => proc { '<h1>successful post</h1>' },
+      :delete => [{:host => 'asdf'},proc { '<h1>Successful delete from host "asdf"</h1>' }]
+    }
+    get_it '/foobar'
+    should.be.ok
+    body.should.equal '<h1>successful get</h1>'
+
+    post_it '/foobar'
+    should.be.ok
+    body.should.equal '<h1>successful post</h1>'
+
+    delete_it '/foobar'
+    should.not.be.ok
+
+    delete_it '/foobar', {}, 'HTTP_HOST' => 'asdf'
+    should.be.ok
+    body.should.equal '<h1>Successful delete from host "asdf"</h1>'
+  end
 end
